@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Uno 1v1</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Uno 1v1</h1>
+    <div id="status">Connecting...</div>
+    
+    <div class="game">
+      <div>
+        <h2>Your Hand</h2>
+        <div id="hand" class="cards"></div>
+      </div>
+
+      <div>
+        <h2>Top Card</h2>
+        <div id="top-card" class="cards"></div>
+      </div>
+    </div>
+
+    <button id="pick">Pick Card</button>
+  </div>
+
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,39 @@
+body {
+    font-family: sans-serif;
+    text-align: center;
+    background: #f9f9f9;
+  }
+  
+  .container {
+    max-width: 800px;
+    margin: auto;
+  }
+  
+  .cards {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin: 10px;
+  }
+  
+  .card {
+    padding: 10px 20px;
+    border-radius: 8px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  
+  .card.red { background: #e74c3c; }
+  .card.yellow { background: #f1c40f; color: black; }
+  .card.green { background: #2ecc71; }
+  .card.blue { background: #3498db; }
+  .card.black { background: #34495e; }
+  
+  button {
+    padding: 10px 20px;
+    font-size: 16px;
+    margin-top: 20px;
+  }
+  
