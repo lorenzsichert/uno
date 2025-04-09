@@ -1,4 +1,4 @@
-const socket = io('http://localhost:3000'); // <-- Replace this
+const socket = io('https://uno-g4vb.onrender.com'); // <-- Replace this
 
 const handDiv = document.getElementById('hand');
 const enemyHandDiv = document.getElementById('enemy-hand');
