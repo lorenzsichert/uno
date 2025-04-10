@@ -68,7 +68,6 @@ body {
 
 button {
     all: unset;
-    /* Optional: Add custom styles to re-style the button */
     display: inline-block;
     cursor: pointer;
 }
