@@ -1,4 +1,5 @@
 const socket = io('https://uno-g4vb.onrender.com'); // <-- Replace this
+//const socket = io('http://localhost:3000');
 
 const handDiv = document.getElementById('hand');
 const enemyHandDiv = document.getElementById('enemy-hand');
@@ -7,39 +8,71 @@ const status = document.getElementById('status');
 const pickBtn = document.getElementById('pick');
 
 let hand = [];
+let handCount = 0;
 let enemyHand = [];
+let enemyHandCount = 0;
 
-let pile = [];
+let pile = [{color: 'grey', value: ''}];
 let deck = [];
 
 function renderHand() {
-  handDiv.innerHTML = '';
-  hand.forEach((card, index) => {
-    const el = createCardElement(card);
-    el.onclick = () => {
-      socket.emit('lay_card', card);
-      hand.splice(index, 1);
-      renderHand();
-        pile.push(card);
+    handDiv.innerHTML = '';
+    for (let i = 0; i < hand.length; i++) {
+        const el = createCardElement(hand[i]);
+
+        if (i < hand.length-1) {
+            el.classList.add('card-entered');
+        }
+
+        el.onclick = () => {
+          socket.emit('lay_card', hand[i]);
+            pile.push(hand[i]);
+          hand.splice(i, 1);
+            renderHand();
             updateTopCard();
-    };
-    handDiv.appendChild(el);
-  });
+        };
+        handDiv.appendChild(el);
+    }
+
+
+    if (handDiv.lastElementChild != null) {
+        if (handCount < hand.length) {
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    handDiv.lastElementChild.classList.add('card-entered');
+                })
+            })
+        } else {
+            handDiv.lastElementChild.classList.add('card-entered');
+        }
+    }
+    handCount = hand.length;
 }
 
 function renderOtherHand() {
     enemyHandDiv.innerHTML = '';
-    enemyHand.forEach(_ => {
+    for (let i = 0; i < enemyHand.length; i++) {
         const el = createBlankCardElement();
+        if (i < enemyHand.length - 1) {
+            el.classList.add('card-entered');
+        }
         enemyHandDiv.appendChild(el);
-    });
+    };
+    if (enemyHandCount < enemyHand.length) {
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                enemyHandDiv.lastElementChild.classList.add('card-entered');
+            })
+        })
+    }
+    enemyHandCount = enemyHand.length;
 }
 
 function createCardElement(card) {
-  const el = document.createElement('div');
-  el.className = `card ${card.color}`;
-  el.textContent = `${card.value}`;
-  return el;
+    const el = document.createElement('div');
+    el.className = `card ${card.color}`;
+    el.textContent = `${card.value}`;
+    return el;
 }
 
 function createBlankCardElement() {
@@ -50,20 +83,20 @@ function createBlankCardElement() {
 }
 
 pickBtn.onclick = () => {
-  socket.emit('pick_card');
+    socket.emit('pick_card');
 };
 
 socket.on('connect', () => {
-  status.textContent = 'Connected. Waiting for another player...';
+    status.textContent = 'Connected. Waiting for another player...';
 });
 
 socket.on('joined', (data) => {
-  console.log('You joined as', data.id);
+    console.log('You joined as', data.id);
 });
 
 socket.on('game_start', (data) => {
-  status.textContent = 'Game Started!';
-  updateTopCard(data.topCard);
+    status.textContent = 'Game Started!';
+    updateTopCard(data.topCard);
 });
 
 socket.on('picked_card', (card) => {
@@ -79,7 +112,7 @@ socket.on('update_enemy_hand', (e_hand) => {
 
 socket.on('card_laid', ({ card }) => {
     pile.push(card);
-  updateTopCard();
+    updateTopCard();
 });
 
 socket.on('player_left', () => {
@@ -87,16 +120,23 @@ socket.on('player_left', () => {
 
     hand = [];
     enemyHand = [];
+    enemyHand = [];
     renderHand();
-    renderEnemyHand();
+    renderOtherHand();
 
     pile = [];
     topCardDiv.innerHTML = '';
 });
 
 function updateTopCard() {
-    topCardDiv.innerHTML = '';
     if (pile.length > 0) {
-        topCardDiv.appendChild(createCardElement(pile[pile.length-1]));
+        let el = createCardElement(pile[pile.length-1]);
+        el.classList.add('pile-card');
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                el.classList.add('card-entered');
+            })
+        })
+        topCardDiv.appendChild(el);
     }
 }

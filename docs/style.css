@@ -2,38 +2,73 @@ body {
     font-family: sans-serif;
     text-align: center;
     background: #f9f9f9;
-  }
-  
-  .container {
+}
+
+.container {
     max-width: 800px;
     margin: auto;
-  }
-  
-  .cards {
+}
+
+
+.center {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.cards {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     gap: 10px;
     margin: 10px;
-  }
-  
-  .card {
+}
+
+.card {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     padding: 10px 20px;
+    height: 80px;
+    width: 40px;
     border-radius: 8px;
     color: white;
     font-weight: bold;
     cursor: pointer;
-  }
-  
-  .card.red { background: #e74c3c; }
-  .card.yellow { background: #f1c40f; color: black; }
-  .card.green { background: #2ecc71; }
-  .card.blue { background: #3498db; }
-  .card.black { background: #34495e; }
-  
-  button {
+    opacity: 0.1;
+    transform: translateY(20px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.card-entered {
+    opacity: 1;
+    transform: translateY(0px);
+}
+
+.pile {
+    position: relative;
     padding: 10px 20px;
-    font-size: 16px;
-    margin-top: 20px;
-  }
-  
+    width: 40px;
+    height: 80px;
+}
+
+.pile-card {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+
+.card.red { background: #e74c3c; }
+.card.yellow { background: #f1c40f; color: black; }
+.card.green { background: #2ecc71; }
+.card.blue { background: #3498db; }
+.card.black { background: #34495e; }
+.card.grey { background: #d3d3d3; }
+
+button {
+    all: unset;
+    /* Optional: Add custom styles to re-style the button */
+    display: inline-block;
+    cursor: pointer;
+}
