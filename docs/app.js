@@ -17,54 +17,70 @@ let deck = [];
 
 function renderHand() {
     handDiv.innerHTML = '';
+
+    let topCard = hand[hand.length-1];
+
+    hand.sort((a, b) => {
+        if (a.color[0] < b.color[0]) return -1;
+        if (a.color[0] > b.color[0]) return 1;
+        if (a.color[1] < b.color[1]) return -1;
+        if (a.color[1] > b.color[1]) return 1;
+
+        if (a.value[0] < b.value[0]) return -1;
+        if (a.value[0] > b.value[0]) return 1;
+        return 0;
+    });
+
+    let topIndex = 0;
+    for (let i = 0; i < hand.length; i++) {
+        if (hand[i].color == topCard.color && hand[i].value == topCard.value) {
+            topIndex = i;
+            break;
+        }
+    }
+
     for (let i = 0; i < hand.length; i++) {
         const el = createCardElement(hand[i]);
 
-        if (i < hand.length-1) {
+        if (handCount > hand.length || i != topIndex) {
             el.classList.add('card-entered');
+        } else { 
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    handDiv.children[topIndex].classList.add('card-entered');
+                })
+            })
         }
 
         el.onclick = () => {
-          socket.emit('lay_card', hand[i]);
-            pile.push(hand[i]);
-          hand.splice(i, 1);
+            let card = hand[i];
+            pile.push(card);
+            hand.splice(i, 1);
+            socket.emit('lay_card', card, hand);
             renderHand();
             updateTopCard();
         };
         handDiv.appendChild(el);
     }
 
-
-    if (handDiv.lastElementChild != null) {
-        if (handCount < hand.length) {
-            requestAnimationFrame(() => {
-                requestAnimationFrame(() => {
-                    handDiv.lastElementChild.classList.add('card-entered');
-                })
-            })
-        } else {
-            handDiv.lastElementChild.classList.add('card-entered');
-        }
-    }
     handCount = hand.length;
 }
 
 function renderOtherHand() {
     enemyHandDiv.innerHTML = '';
     for (let i = 0; i < enemyHand.length; i++) {
-        const el = createBlankCardElement();
+        const el = createCardElement({color: 'black', value: ''});
         if (i < enemyHand.length - 1) {
             el.classList.add('card-entered');
+        } else {
+         requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    el.classList.add('card-entered');
+                })
+            })
         }
         enemyHandDiv.appendChild(el);
     };
-    if (enemyHandCount < enemyHand.length) {
-        requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-                enemyHandDiv.lastElementChild.classList.add('card-entered');
-            })
-        })
-    }
     enemyHandCount = enemyHand.length;
 }
 
@@ -75,16 +91,17 @@ function createCardElement(card) {
     return el;
 }
 
-function createBlankCardElement() {
-    const el = document.createElement('div');
-    el.className = 'card black'
-    el.textContent = '?';
-    return el;
-}
 
 pickBtn.onclick = () => {
     socket.emit('pick_card');
 };
+topCardDiv.onclick = () => {
+    socket.emit('pick_pile_card', hand);
+    pile.pop();
+    if (topCardDiv.lastElementChild != null) {
+        topCardDiv.lastElementChild.remove();
+    }
+}
 
 socket.on('connect', () => {
     status.textContent = 'Connected. Waiting for another player...';
@@ -94,14 +111,22 @@ socket.on('joined', (data) => {
     console.log('You joined as', data.id);
 });
 
-socket.on('game_start', (data) => {
+socket.on('game_start', (startPile) => {
     status.textContent = 'Game Started!';
-    updateTopCard(data.topCard);
+    pile = startPile;
+    updateTopCard();
 });
 
 socket.on('picked_card', (card) => {
     hand.push(card);
     renderHand();
+});
+
+socket.on('pop_pile', () => {
+    pile.pop();
+    if (topCardDiv.lastElementChild != null) {
+        topCardDiv.lastElementChild.remove();
+    }
 });
 
 socket.on('update_enemy_hand', (e_hand) => {
@@ -123,7 +148,6 @@ socket.on('player_left', () => {
     enemyHand = [];
     renderHand();
     renderOtherHand();
-
     pile = [];
     topCardDiv.innerHTML = '';
 });
@@ -135,6 +159,8 @@ function updateTopCard() {
         requestAnimationFrame(() => {
             requestAnimationFrame(() => {
                 el.classList.add('card-entered');
+                let rotation = (Math.random() - 0.5) * 20;
+                el.style.transform += ' rotate(' + rotation + 'deg)';
             })
         })
         topCardDiv.appendChild(el);

@@ -30,15 +30,12 @@ io.on('connection', (socket) => {
     io.emit('players_update', players);
 
     if (player_count === 2) {
-    deck = generateDeck();
-    pile = [deck.pop()];
-    io.emit('game_start', {
-      players,
-      topCard: pile[pile.length - 1]
-    });
+        deck = generateDeck();
+        pile = [deck.pop()];
+        io.emit('game_start', pile);
     }
 
-    socket.on('lay_card', (card) => {
+    socket.on('lay_card', (card, hand) => {
         pile.push(card);
         for (let i = 0; i < players[socket.id].length; i++) {
             if (players[socket.id][i].color == card.color && players[socket.id][i].value == card.value) {
@@ -47,7 +44,7 @@ io.on('connection', (socket) => {
             } 
         }
         socket.broadcast.emit('card_laid', { card, by: socket.id });
-        socket.broadcast.emit('update_enemy_hand', players[socket.id]);
+        socket.broadcast.emit('update_enemy_hand', hand);
     });
 
     socket.on('pick_card', () => {
@@ -58,13 +55,23 @@ io.on('connection', (socket) => {
         socket.broadcast.emit('update_enemy_hand', players[socket.id]);
     });
 
+    socket.on('pick_pile_card', (hand) => {
+        if (pile.length === 0) { return; }   
+
+        const card = pile.pop();
+        players[socket.id].push(card);
+        socket.emit('picked_card', card);
+        socket.broadcast.emit('pop_pile');
+        socket.broadcast.emit('update_enemy_hand', players[socket.id]);
+    });
+
     socket.on('disconnect', () => {
     console.log('User disconnected:', socket.id);
     delete players[socket.id];
     io.emit('player_left', socket.id);
     if (Object.keys(players).length < 2) {
-      deck = [];
-      pile = [];
+          deck = [];
+          pile = [];
     }
     });
 });

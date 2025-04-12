@@ -1,12 +1,24 @@
 body {
+    all: unset;
     font-family: sans-serif;
     text-align: center;
     background: #f9f9f9;
 }
 
 .container {
+    display: flex;
+    flex-direction: column;
+    height: 99vh;
     max-width: 800px;
     margin: auto;
+}
+
+.game {
+    display: flex;
+    height: 100%;
+    flex-direction: column;
+    justify-content: space-between;
+    padding-bottom: 3vh;
 }
 
 
@@ -26,18 +38,25 @@ body {
 
 .card {
     display: flex;
+    user-select: none;
     justify-content: center;
     align-items: center;
     padding: 10px 20px;
-    height: 70px;
-    width: 30px;
+    height: 5.5vh;
+    width: 1.5vh;
     border-radius: 8px;
     color: white;
     font-weight: bold;
+    font-size: 19px;
     cursor: pointer;
     opacity: 0.1;
     transform: translateY(20px);
-    transition: opacity 0.4s ease, transform 0.4s ease;
+    transition: opacity 0.7s ease, transform 0.7s ease;
+    transform-origin: center;
+}
+
+.deck {
+    box-shadow: 0 0px 10px rgba(0,0,0,0.8);
 }
 
 .card-entered {
@@ -53,21 +72,30 @@ body {
 }
 
 .pile-card {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
     position: absolute;
     top: 0;
     left: 0;
 }
 
 
-.card.red { background: #e74c3c; }
-.card.yellow { background: #f1c40f; color: black; }
-.card.green { background: #2ecc71; }
-.card.blue { background: #3498db; }
-.card.black { background: #34495e; }
+.card.red { background: #D82D3F; }
+.card.yellow { background: #F2D038; color: black; }
+.card.green { background: #3FAF47; }
+.card.blue { background: #255BA7; }
+.card.black { background: #010101; }
 .card.grey { background: #d3d3d3; }
 
 button {
     all: unset;
     display: inline-block;
     cursor: pointer;
+}
+
+button:hover {
+    opacity: 0.9;
+}
+
+button:active {
+    opacity: 0.8;
 }
